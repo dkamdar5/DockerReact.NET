@@ -20,6 +20,12 @@ namespace react_app
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication("CookieAuth")
+                .AddCookie("CookieAuth", config =>
+                {
+                    config.Cookie.Name = "Auth.Cookie";
+                    config.LoginPath = "/Home/Authenticate";
+                });
 
             services.AddControllersWithViews();
 
@@ -49,6 +55,9 @@ namespace react_app
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
