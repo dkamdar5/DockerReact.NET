@@ -1,6 +1,6 @@
 using System;
 
-namespace react_app
+namespace react_app.Models
 {
     public class WeatherForecast
     {

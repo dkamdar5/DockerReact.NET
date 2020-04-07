@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using react_app.Data;
 
 namespace react_app
 {
@@ -20,12 +22,23 @@ namespace react_app
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication("CookieAuth")
-                .AddCookie("CookieAuth", config =>
-                {
-                    config.Cookie.Name = "Auth.Cookie";
-                    config.LoginPath = "/Home/Authenticate";
-                });
+            services.AddDbContext<AppDbContext>(config => {
+                config.UseInMemoryDatabase("Memory");
+            });
+
+            services.AddIdentity<IdentityUser, IdentityRole>(config => {
+                config.Password.RequiredLength = 6;
+                config.Password.RequireDigit = false;
+                config.Password.RequireNonAlphanumeric = false;
+                config.Password.RequireUppercase = false;
+            })
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.ConfigureApplicationCookie(config => {
+                config.Cookie.Name = "Identity.Cookie";
+                config.LoginPath = "/Home/Login";
+            });
 
             services.AddControllersWithViews();
 

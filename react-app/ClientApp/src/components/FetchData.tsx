@@ -5,21 +5,16 @@ export default () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    authenticate();
     populateWeatherData();
   },[])
-
-
-  const authenticate = async () => {
-    const response =  await fetch('Home/Authenticate');
-    const data = await response.text();
-  }
 
   const populateWeatherData = async () => {
     const response = await fetch('weatherforecast');
     const data = await response.json();
-    setForecasts(data);
-    setLoading(false);
+    if (data) {
+      setForecasts(data);
+      setLoading(false);
+    }
   }
 
   const ForecastsTable = () => {
