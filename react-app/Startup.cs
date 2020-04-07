@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using react_app.AuthorizationRequirements;
 using react_app.Data;
+using System.Security.Claims;
 
 namespace react_app
 {
@@ -39,6 +42,35 @@ namespace react_app
                 config.Cookie.Name = "Identity.Cookie";
                 config.LoginPath = "/Home/Login";
             });
+
+            services.AddAuthorization(congif => {
+                // var defaultAuthBuilder = new AuthorizationPolicyBuilder();
+                // var defaultAuthPolicy = defaultAuthBuilder
+                //     .RequireAuthenticatedUser()
+                //     .RequireClaim(ClaimTypes.DateOfBirth)
+                //     .Build();
+
+                // congif.DefaultPolicy = defaultAuthPolicy;
+
+                // congif.AddPolicy("Claim.DoB", policyBuilder =>{
+                //     policyBuilder.RequireClaim(ClaimTypes.DateOfBirth);
+                // });
+
+                congif.AddPolicy("Admin", policyBuilder => {
+                    policyBuilder.RequireClaim(ClaimTypes.Role, "Admin");
+                });
+
+                congif.AddPolicy("Claim.Dob", policyBuilder => {
+                    policyBuilder.RequireCustomClaim(ClaimTypes.DateOfBirth);
+                });
+
+                // congif.AddPolicy("Claim.DoB", policyBuilder =>
+                // {
+                //     policyBuilder.AddRequirements(new CustomRequireClaim(ClaimTypes.DateOfBirth));
+                // });
+            });
+
+            services.AddScoped<IAuthorizationHandler, CustomRequireClaimHandler>();
 
             services.AddControllersWithViews();
 
