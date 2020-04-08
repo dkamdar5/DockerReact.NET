@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using react_app.Models;
@@ -88,6 +89,17 @@ namespace react_app.Controllers {
             HttpContext.SignInAsync(userPrincipal);
 
             return new EmptyResult();
+        }
+
+        public async Task<IActionResult> DoSomething([FromServices] IAuthorizationService authorizationService)
+        {
+            var authResult = await authorizationService.AuthorizeAsync(User, "aPolicy");
+
+            if (authResult.Succeeded){
+                return Ok();
+            }
+
+            return Ok();
         }
     }
 }
